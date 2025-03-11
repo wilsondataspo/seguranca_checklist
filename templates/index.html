@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Checklist de Segurança</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <h1>Checklist de Segurança</h1>
+        <ul>
+            {% for item in itens %}
+            <li>
+                <input type="checkbox" id="item_{{ item.id }}" {% if item.concluido %}checked{% endif %} onchange="window.location.href='{{ url_for('concluir', item_id=item.id) }}'">
+                <label for="item_{{ item.id }}" {% if item.concluido %}style="text-decoration: line-through;"{% endif %}>
+                    {{ item.descricao }}
+                </label>
+            </li>
+            {% endfor %}
+        </ul>
+    </body>
+    </html>
