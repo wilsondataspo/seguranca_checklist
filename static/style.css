@@ -10,3 +10,8 @@ body {
 .list-group-item {
     cursor: pointer;
 }
+
+.search-highlight {
+    background-color: #fff3cd;
+    font-weight: bold;
+}
