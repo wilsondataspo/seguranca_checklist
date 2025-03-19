@@ -2,23 +2,53 @@
 
 {% block content %}
     <h1 class="mb-4">Checklist de Segurança</h1>
-    <form action="{{ url_for('adicionar') }}" method="POST" class="mb-4">
+    
+    <!-- Formulário para adicionar item principal -->
+    <form action="{{ url_for('adicionar_item') }}" method="POST" class="mb-4">
         <div class="input-group">
-            <input type="text" name="descricao" class="form-control" placeholder="Novo item" required>
-            <button type="submit" class="btn btn-primary">Adicionar</button>
+            <input type="text" name="descricao" class="form-control" placeholder="Novo item principal" required>
+            <button type="submit" class="btn btn-primary">Adicionar Item</button>
         </div>
     </form>
-    <ul class="list-group">
+
+    <!-- Lista de Itens -->
+    <div class="list-group">
         {% for item in itens %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <input type="checkbox" id="item_{{ item.id }}" {% if item.concluido %}checked{% endif %} onchange="window.location.href='{{ url_for('concluir', item_id=item.id) }}'">
-                <label for="item_{{ item.id }}" class="ms-2 {% if item.concluido %}text-decoration-line-through{% endif %}">
-                    {{ item.descricao }}
-                </label>
+        <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <input type="checkbox" id="item_{{ item.id }}" {% if item.concluido %}checked{% endif %} 
+                           onchange="window.location.href='{{ url_for('concluir_item', item_id=item.id) }}'">
+                    <label for="item_{{ item.id }}" class="ms-2 {% if item.concluido %}text-decoration-line-through{% endif %}">
+                        {{ item.descricao }} ({{ item.user.username }})
+                    </label>
+                </div>
+                <!-- Formulário para adicionar subitem -->
+                <form action="{{ url_for('adicionar_subitem', item_id=item.id) }}" method="POST" class="d-flex">
+                    <input type="text" name="descricao_subitem" class="form-control me-2" placeholder="Novo subitem" required>
+                    <button type="submit" class="btn btn-sm btn-success">+</button>
+                </form>
             </div>
-        </li>
+            <!-- Lista de Subitens -->
+            <ul class="list-group mt-2">
+                {% for subitem in item.subitens %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <input type="checkbox" id="subitem_{{ subitem.id }}" {% if subitem.concluido %}checked{% endif %} 
+                               onchange="window.location.href='{{ url_for('concluir_subitem', subitem_id=subitem.id) }}'">
+                        <label for="subitem_{{ subitem.id }}" class="ms-2 {% if subitem.concluido %}text-decoration-line-through{% endif %}">
+                            {{ subitem.descricao }}
+                        </label>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endfor %}
-    </ul>
-    <a href="{{ url_for('exportar_pdf') }}" class="btn btn-success mt-4">Exportar para PDF</a>
+    </div>
+
+    <!-- Botão de Exportar PDF (só para o próprio usuário) -->
+    {% if not current_user.is_admin %}
+        <a href="{{ url_for('exportar_pdf') }}" class="btn btn-success mt-4">Exportar para PDF</a>
+    {% endif %}
 {% endblock %}
